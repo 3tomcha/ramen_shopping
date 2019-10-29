@@ -1,6 +1,6 @@
 <form method='POST' action='/'>
     @csrf
-    <p>商品IDは2番の品物</p>
+    <p>商品ID2番の品物</p>
     <select name="amount">
         <option>1</option>
         <option>2</option>
