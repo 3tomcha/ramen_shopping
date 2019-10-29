@@ -11,7 +11,5 @@
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-    // return view('welcome');
-});
+Route::get('/', 'IndexController@index');
+Route::post('/', 'IndexController@cart');
