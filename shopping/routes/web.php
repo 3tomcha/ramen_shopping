@@ -13,3 +13,4 @@
 
 Route::get('/', 'IndexController@index');
 Route::post('/', 'IndexController@cart');
+Route::get('/cartitem', 'CartController@index');
