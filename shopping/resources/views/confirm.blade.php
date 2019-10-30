@@ -8,5 +8,6 @@
 @endforeach
 
 <form action="/buy" method="POST">
+    @csrf
     <input type="submit" value="注文を確定する"/>
 </form>

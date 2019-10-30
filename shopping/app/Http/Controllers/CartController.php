@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Customer;
+use App\Purchase;
+use App\Product;
 
 class CartController extends Controller
 {
@@ -61,10 +63,15 @@ class CartController extends Controller
         // 住所などの顧客情報と、商品IDと買った個数は別テーブルに保存し、連携させたい
 
         // 住所などの顧客情報：Customersテーブル
-        // 商品情報：Productsテーブル
+        // 商品情報：Productsテーブル(これはこの操作とは関係なく事前にデータが保存されている)
 
         // ひとまず仮のデータを入れてみると0から始まる数字問題が現れる
         // 保存するときはハイフンありなしや、trimの必要性がありそう
+
+        // 全部保存すると重複しそう。検索してもうあるなら保存しないとか
+        // そもそもログインしている場合は、もう入力する必要ないか？
+        // そこらへんは仕様を詰める必要がある
+        // リロードへの対策も必要か？
 
         $Customer = new Customer();
         $Customer->name = 'test';
@@ -74,6 +81,21 @@ class CartController extends Controller
         $Customer->tel = '0292518696';
         $Customer->mail = 'test@gmail.com';
         $Customer->save();
+
+        // dd($Customer->id);
+
+        $Product = new Product();
+
+        // 送られてきた商品IDと個数をデータベースに保存していく
+        $sum = $request->session()->get('sum');
+
+        foreach ($sum as $item_id => $amount) {
+            $Purchase = new Purchase();
+            $Purchase->customer_id = $Customer->id;
+            $Purchase->product_id = $item_id;
+            $Purchase->number = $amount;
+            $Purchase->save();
+        }
 
         // あとは購入テーブルもあった方が良いかも
     }
