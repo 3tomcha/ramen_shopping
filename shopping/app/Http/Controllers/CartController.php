@@ -57,6 +57,7 @@ class CartController extends Controller
         // $request->amount;
     }
 
+    // お届け先入力ページ
     public function add(Request $request)
     {
         $sum = $request->session()->get('sum');
@@ -68,6 +69,14 @@ class CartController extends Controller
     public function confirm(Request $request)
     {
         // 前画面で入力したお届け先と、商品の情報を表示する
+
+        $customer = $request->all();
+        unset($customer['_token']);
+
+        $request->session()->put(
+            'customer',
+            $customer
+        );
         // 前画面で入力した情報はフォームから取得する必要がある
         $sum = $request->session()->get('sum');
         // dd($sum);
@@ -92,14 +101,11 @@ class CartController extends Controller
         // そこらへんは仕様を詰める必要がある
         // リロードへの対策も必要か？
 
-        $Customer = new Customer();
-        $Customer->name = 'test';
-        $Customer->postalcode = '3114145';
-        $Customer->prefecturecode = 11;
-        $Customer->address = '水戸市双葉台5-24 6-4-5';
-        $Customer->tel = '0292518696';
-        $Customer->mail = 'test@gmail.com';
-        $Customer->save();
+        $temp_customer = $request->session()->get('customer');
+
+        $customer = new Customer();
+        $customer->fill($temp_customer);
+        $customer->save();
 
         // dd($Customer->id);
 
@@ -110,7 +116,7 @@ class CartController extends Controller
 
         foreach ($sum as $item_id => $amount) {
             $Purchase = new Purchase();
-            $Purchase->customer_id = $Customer->id;
+            $Purchase->customer_id = $customer->id;
             $Purchase->product_id = $item_id;
             $Purchase->number = $amount;
             $Purchase->save();
