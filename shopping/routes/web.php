@@ -14,6 +14,7 @@
 Route::get('/', 'IndexController@index');
 Route::post('/', 'IndexController@cart');
 Route::get('/cartitem', 'CartController@index');
+Route::post('/cartitem', 'CartController@update');
 Route::get('/buy', 'CartController@add');
 Route::post('/buy', 'CartController@buy');
 Route::post('/confirm', 'CartController@confirm');

@@ -35,7 +35,26 @@ class CartController extends Controller
             $sum
         );
 
-        return view('cart.index', ['sum' => $sum]);
+        return view('cart.index', ['sum' => $sum, 'products' => Product::all()]);
+    }
+
+    public function update(Request $request)
+    {
+        // dd($request->item_id);
+        // まだデータベースでなく、sessionを用いて更新していく
+        $sum = $request->session()->get('sum');
+        $sum[$request->item_id] = $request->amount;
+
+        $request->session()->put(
+            'sum',
+            $sum
+        );
+
+        return view('cart.index', ['sum' => $sum, 'products' => Product::all()]);
+        // dd($sum);
+
+        // Purchase::where('customer_id', )
+        // $request->amount;
     }
 
     public function add(Request $request)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Product;
 
 class IndexController extends Controller
 {
@@ -10,7 +11,10 @@ class IndexController extends Controller
     {
         dump($request->session());
 
-        return view('index');
+        // 商品名のデータベースから取得していく
+        $products = Product::all();
+
+        return view('index', ['products' => $products]);
     }
 
     public function cart(Request $request)
