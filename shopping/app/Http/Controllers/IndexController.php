@@ -9,8 +9,6 @@ class IndexController extends Controller
 {
     public function index(Request $request)
     {
-        dump($request->session());
-
         // 商品名のデータベースから取得していく
         $products = Product::all();
 
@@ -29,6 +27,6 @@ class IndexController extends Controller
         //     $request->item_id => $request->amount,
         //     ]]);
 
-        return redirect('/');
+        return redirect('/')->with('status', 'カートに追加しました');
     }
 }

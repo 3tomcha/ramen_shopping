@@ -10,17 +10,17 @@ class ProductsTableSeeder extends Seeder
     public function run()
     {
         $ramens = [
-            '塩ラーメン',
-            '味噌ラーメン',
-            '豚骨ラーメン',
-            '醤油ラーメン',
-            '台湾ラーメン',
-            '五目ラーメン',
-            '中華そば',
+            ['name' => '塩ラーメン', 'price' => '500'],
+            ['name' => '味噌ラーメン', 'price' => '600'],
+            ['name' => '醤油ラーメン', 'price' => '600'],
+            ['name' => '台湾ラーメン', 'price' => '700'],
+            ['name' => '五目ラーメン', 'price' => '700'],
+            ['name' => '中華そば', 'price' => '550'],
             ];
         foreach ($ramens as $ramen) {
             DB::table('products')->insert([
-            'name' => $ramen,
+            'name' => $ramen['name'],
+            'price' => $ramen['price'],
             ]);
         }
     }
