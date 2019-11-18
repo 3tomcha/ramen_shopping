@@ -11,35 +11,7 @@ class CartController extends Controller
 {
     public function index(Request $request)
     {
-        // 同じ番号で登録されているものをここで合算してみる
         $items = $request->session()->get('items');
-        // $sum = array();
-
-        // dump($items);
-
-        // if (!empty($items)) {
-        //     // 下記が空だとエラーがでてしまう
-        //     foreach ($items as $item) {
-        //         foreach ($item as $key => $value) {
-        //             // Noticeエラーが出てしまうので@をつける
-        //             @$sum[$key] += $item[$key];
-        //         }
-        //     }
-        // }
-
-        // // foreach ($sum as $item_id => $amount) {
-        // //     echo "商品IDは{$item_id}です。選択された合計数は{$amount}個です<br>";
-        // // }
-
-        // // これからデータベースに保存する処理を書いていく
-        // // dd($sum);
-        // // dd($request->session());
-
-        // // 次の画面でも使うのでsessionにsumの方も保存しておく
-        // $request->session()->put(
-        //     'sum',
-        //     $sum
-        // );
 
         return view('cart.index', ['items' => $items, 'products' => Product::all()]);
     }
@@ -49,10 +21,8 @@ class CartController extends Controller
         // まだデータベースでなく、sessionを用いて更新していく
         $items = $request->session()->get('items');
 
-        foreach ($items as &$item) {
-            if (array_key_exists($request->item_id, $item)) {
-                $item[$request->item_id] = $request->amount;
-            }
+        if (array_key_exists($request->item_id, $items)) {
+            $items[$request->item_id] = $request->amount;
         }
         // dd($items);
 
@@ -61,8 +31,6 @@ class CartController extends Controller
             $items
         );
         // dd($request->session());
-
-        unset($item);
 
         return redirect('/cartitem');
     }
@@ -72,10 +40,8 @@ class CartController extends Controller
         // まだデータベースでなく、sessionを用いて更新していく
         $items = $request->session()->get('items');
 
-        foreach ($items as &$item) {
-            if (array_key_exists($request->item_id, $item)) {
-                unset($item[$request->item_id]);
-            }
+        if (array_key_exists($request->item_id, $items)) {
+            unset($items[$request->item_id]);
         }
         // dd($items);
 
@@ -85,18 +51,13 @@ class CartController extends Controller
         );
         // dd($request->session());
 
-        unset($item);
-
         return redirect('/cartitem');
     }
 
     // お届け先入力ページ
     public function add(Request $request)
     {
-        $sum = $request->session()->get('sum');
-        // dd($sum);
-
-        return view('buy', ['sum' => $sum]);
+        return view('buy');
     }
 
     public function confirm(Request $request)
@@ -105,16 +66,18 @@ class CartController extends Controller
 
         $customer = $request->all();
         unset($customer['_token']);
+        // dd($customer);
 
+        // 次のbuyメソッドで使えるようにセッションに保存しておく
         $request->session()->put(
             'customer',
             $customer
         );
         // 前画面で入力した情報はフォームから取得する必要がある
-        $sum = $request->session()->get('sum');
-        // dd($sum);
+        $items = $request->session()->get('items');
+        // dd($items);
 
-        return view('confirm', ['sum' => $sum]);
+        return view('confirm', ['items' => $items, 'customer' => $customer, 'products' => Product::all()]);
     }
 
     public function buy(Request $request)
@@ -145,16 +108,18 @@ class CartController extends Controller
         $Product = new Product();
 
         // 送られてきた商品IDと個数をデータベースに保存していく
-        $sum = $request->session()->get('sum');
+        $items = $request->session()->get('items');
 
-        foreach ($sum as $item_id => $amount) {
+        foreach ($items as $item_id => $amount) {
             $Purchase = new Purchase();
             $Purchase->customer_id = $customer->id;
             $Purchase->product_id = $item_id;
             $Purchase->number = $amount;
             $Purchase->save();
         }
+        // 購入が完了したので、セッションを削除する
+        $request->session()->forget('items');
 
-        // あとは購入テーブルもあった方が良いかも
+        return view('end');
     }
 }

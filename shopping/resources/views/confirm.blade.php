@@ -1,10 +1,15 @@
-確認画面
+<h1>確認画面</h1>
 
-お届け先入力<br>
-
-購入内容<br>
-@foreach ($sum as $item_id => $amount) 
-            {{"商品IDは{$item_id}です。選択された合計数は{$amount}個です"}}
+<h2>お届け先入力</h2><br>
+@foreach($customer as $key => $value)
+    {{ __("customer.$key") }}
+    {{ $value }}<br>
+@endforeach
+<h2>購入内容</h2><br>
+@foreach ($items as $item_id => $amount) 
+            {{ __("product.name").$products->find($item_id)->name}}<br>
+            {{ __("product.price").$products->find($item_id)->price}}<br>
+            {{ __("product.amount").$amount}}<br>
 @endforeach
 
 <form action="/buy" method="POST">

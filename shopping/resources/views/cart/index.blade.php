@@ -5,12 +5,12 @@
 @else
     @foreach ($items as $item_id => $amount)
     {{$products->find($item_id)->name}}
-    {{$products->find($item_id)->price}}円
+    <p><span class="price">{{$products->find($item_id)->price}}</span>円</p>
     <form action="/cartitem" method="POST">
         @csrf
         個数の更新
-        <input type="text" name="amount" value="{{$amount}}"/>
-        <input type="hidden" name="item_id" value="{{$item_id}}"/>
+        <input type="text" name="amount" value="{{$amount}}" id="amount_{{ $item_id }}"/>
+        <input type="hidden" name="item_id" value="{{$item_id}}"/><br>
         @method('PUT')
         <input type="submit" value="更新"/>
     </form>
@@ -23,7 +23,8 @@
     </form>
     <br>
     @endforeach
-合計金額
+合計金額<p id="total-amount"></p>
 <a href="/">TOPに戻る</a>
 <a href="/buy">レジに進む</a>
 @endempty
+<script src="js/cart.es6.js" ></script>
