@@ -14,10 +14,14 @@ class CartController extends Controller
         // 同じ番号で登録されているものをここで合算してみる
         $items = $request->session()->get('item');
         $sum = array();
-        foreach ($items as $item) {
-            foreach ($item as $key => $value) {
-                // Noticeエラーが出てしまうので@をつける
-                @$sum[$key] += $item[$key];
+
+        if (!empty($items)) {
+            // 下記が空だとエラーがでてしまう
+            foreach ($items as $item) {
+                foreach ($item as $key => $value) {
+                    // Noticeエラーが出てしまうので@をつける
+                    @$sum[$key] += $item[$key];
+                }
             }
         }
 
