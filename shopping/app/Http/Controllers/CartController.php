@@ -12,53 +12,82 @@ class CartController extends Controller
     public function index(Request $request)
     {
         // 同じ番号で登録されているものをここで合算してみる
-        $items = $request->session()->get('item');
-        $sum = array();
+        $items = $request->session()->get('items');
+        // $sum = array();
 
-        if (!empty($items)) {
-            // 下記が空だとエラーがでてしまう
-            foreach ($items as $item) {
-                foreach ($item as $key => $value) {
-                    // Noticeエラーが出てしまうので@をつける
-                    @$sum[$key] += $item[$key];
-                }
-            }
-        }
+        // dump($items);
 
-        // foreach ($sum as $item_id => $amount) {
-        //     echo "商品IDは{$item_id}です。選択された合計数は{$amount}個です<br>";
+        // if (!empty($items)) {
+        //     // 下記が空だとエラーがでてしまう
+        //     foreach ($items as $item) {
+        //         foreach ($item as $key => $value) {
+        //             // Noticeエラーが出てしまうので@をつける
+        //             @$sum[$key] += $item[$key];
+        //         }
+        //     }
         // }
 
-        // これからデータベースに保存する処理を書いていく
-        // dd($sum);
-        // dd($request->session());
+        // // foreach ($sum as $item_id => $amount) {
+        // //     echo "商品IDは{$item_id}です。選択された合計数は{$amount}個です<br>";
+        // // }
 
-        // 次の画面でも使うのでsessionにsumの方も保存しておく
-        $request->session()->put(
-            'sum',
-            $sum
-        );
+        // // これからデータベースに保存する処理を書いていく
+        // // dd($sum);
+        // // dd($request->session());
 
-        return view('cart.index', ['sum' => $sum, 'products' => Product::all()]);
+        // // 次の画面でも使うのでsessionにsumの方も保存しておく
+        // $request->session()->put(
+        //     'sum',
+        //     $sum
+        // );
+
+        return view('cart.index', ['items' => $items, 'products' => Product::all()]);
     }
 
     public function update(Request $request)
     {
-        // dd($request->item_id);
         // まだデータベースでなく、sessionを用いて更新していく
-        $sum = $request->session()->get('sum');
-        $sum[$request->item_id] = $request->amount;
+        $items = $request->session()->get('items');
+
+        foreach ($items as &$item) {
+            if (array_key_exists($request->item_id, $item)) {
+                $item[$request->item_id] = $request->amount;
+            }
+        }
+        // dd($items);
 
         $request->session()->put(
-            'sum',
-            $sum
+            'items',
+            $items
         );
+        // dd($request->session());
 
-        return view('cart.index', ['sum' => $sum, 'products' => Product::all()]);
-        // dd($sum);
+        unset($item);
 
-        // Purchase::where('customer_id', )
-        // $request->amount;
+        return redirect('/cartitem');
+    }
+
+    public function destroy(Request $request)
+    {
+        // まだデータベースでなく、sessionを用いて更新していく
+        $items = $request->session()->get('items');
+
+        foreach ($items as &$item) {
+            if (array_key_exists($request->item_id, $item)) {
+                unset($item[$request->item_id]);
+            }
+        }
+        // dd($items);
+
+        $request->session()->put(
+            'items',
+            $items
+        );
+        // dd($request->session());
+
+        unset($item);
+
+        return redirect('/cartitem');
     }
 
     // お届け先入力ページ
